@@ -6,7 +6,7 @@
   "homepage": "https://remnawave.github.io/xray-monaco-editor/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "NODE_ENV=production tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
