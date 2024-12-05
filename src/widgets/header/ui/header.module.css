@@ -1,0 +1,10 @@
+.root {
+    z-index: 198;
+    display: flex;
+    justify-content: center;
+
+    @media (min-width: $mantine-breakpoint-xl) {
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+}

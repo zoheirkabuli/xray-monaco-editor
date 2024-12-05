@@ -1,4 +1,6 @@
 build: main.wasm wasm_exec.js xray.schema.json
+	mkdir -p public
+	mv main.wasm wasm_exec.js xray.schema.json public/
 .PHONY: build
 
 dev-lite:
@@ -37,7 +39,3 @@ assets/Xray-docs-next-main:
 
 xray.schema.json: scrape-docs.py assets/Xray-docs-next-main
 	grep -r '' assets/Xray-docs-next-main/docs/en/config/ | cut -d: -f2- | python3 scrape-docs.py > xray.schema.json
-
-
-serve:
-	python3 -mhttp.server
