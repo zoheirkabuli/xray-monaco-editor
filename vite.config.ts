@@ -7,6 +7,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
     plugins: [react(), tsconfigPaths()],
     publicDir: 'public',
+    base: '/xray-monaco-editor/',
     build: {
         target: 'esNext',
         outDir: 'dist'
