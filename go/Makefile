@@ -1,6 +1,6 @@
 build: main.wasm wasm_exec.js xray.schema.json
-	mkdir -p public
-	mv main.wasm wasm_exec.js xray.schema.json public/
+	mkdir -p ../public
+	mv main.wasm wasm_exec.js xray.schema.json ../public/
 .PHONY: build
 
 dev-lite:

@@ -4,7 +4,7 @@ import axios from 'axios'
 export const MonacoSetupFeature = {
     setup: async (monaco: Monaco) => {
         try {
-            const response = await axios.get('/xray.schema.json')
+            const response = await axios.get('xray.schema.json')
             const schema = await response.data
 
             monaco.languages.json.jsonDefaults.setDiagnosticsOptions({

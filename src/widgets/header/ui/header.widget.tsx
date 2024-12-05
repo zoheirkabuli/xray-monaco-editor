@@ -1,6 +1,6 @@
 import { ActionIcon, Group, Title } from '@mantine/core'
-import { PiGithubLogo } from 'react-icons/pi'
 import { StickyHeader } from '@/shared/ui/sticky-header'
+import { PiGithubLogo } from 'react-icons/pi'
 
 import classes from './header.module.css'
 
@@ -12,7 +12,7 @@ export function HeaderWidget() {
 
                 <ActionIcon
                     component="a"
-                    href="https://github.com/mmmray/xray-online"
+                    href="https://github.com/remnawave/xray-monaco-editor"
                     size="lg"
                     target="_blank"
                     variant="subtle"
