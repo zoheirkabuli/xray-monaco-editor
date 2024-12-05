@@ -7,7 +7,7 @@ JSON config fails to load. Users don't want to run the core directly to find
 the error message. Therefore, let's use a browser tool in the style of
 jsonlint.com.
 
-[Try it out here](https://mmmray.github.io/xray-online/)
+[Try it out here](https://remnawave.github.io/xray-monaco-editor/)
 
 Because some configuration validation happens after parsing, some mistakes are
 not caught, only most typing mistakes. If you find an obvious gap that bothers
@@ -17,6 +17,6 @@ you, raise an issue.
 
 xray-online uses a patched version of xray-core compiled to WASM. The build process is entirely driven through the `Makefile`. A POSIX shell is recommended, WSL is probably mandatory on Windows.
 
-* `make build` to build the WASM module from scratch.
-* `make dev-lite` to download the WASM module from GitHub instead.
-* `make serve` to launch the development server.
+- `make build` to build the WASM module from scratch.
+- `make dev-lite` to download the WASM module from GitHub instead.
+- `make serve` to launch the development server.
