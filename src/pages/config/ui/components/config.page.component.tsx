@@ -7,7 +7,7 @@ import { Page } from '@/shared/ui/page'
 import { Props } from './interfaces'
 
 export const ConfigPageComponent = (props: Props) => {
-    const { config } = props
+    const { config, version } = props
 
     return (
         <>
@@ -15,7 +15,7 @@ export const ConfigPageComponent = (props: Props) => {
 
             <Container size="lg">
                 <Page title="Config">
-                    <ConfigEditorWidget config={config} />
+                    <ConfigEditorWidget config={config} version={version} />
                 </Page>
             </Container>
         </>

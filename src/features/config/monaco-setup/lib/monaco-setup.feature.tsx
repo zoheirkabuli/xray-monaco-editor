@@ -1,4 +1,5 @@
 import { Monaco } from '@monaco-editor/react'
+import { consola } from 'consola/browser'
 import axios from 'axios'
 
 export const MonacoSetupFeature = {
@@ -21,7 +22,7 @@ export const MonacoSetupFeature = {
                 validate: true
             })
         } catch (error) {
-            console.error('Failed to load JSON schema:', error)
+            consola.error('Failed to load JSON schema:', error)
         }
     }
 }

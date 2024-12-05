@@ -7,7 +7,8 @@ export const ConfigValidationFeature = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         monacoRef: any,
         setResult: (message: string) => void,
-        setIsConfigValid: (isValid: boolean) => void
+        setIsConfigValid: (isValid: boolean) => void,
+        version: null | string
     ) => {
         try {
             if (!editorRef.current) return
@@ -21,11 +22,15 @@ export const ConfigValidationFeature = {
             const validationResult = window.XrayParseConfig(currentValue)
 
             setResult(
-                `${dayjs().format('HH:mm:ss')} | ${validationResult || 'Xray config is valid.'}`
+                `${dayjs().format('HH:mm:ss')} | Xray Core ${version || ''} | ${validationResult || 'Xray config is valid.'}`
             )
             setIsConfigValid(!validationResult)
         } catch (err: unknown) {
-            setResult(`${dayjs().format('HH:mm:ss')} | Validation error: ${(err as Error).message}`)
+            setResult(
+                `${dayjs().format('HH:mm:ss')} | Xray Core ${version || ''} | Validation error: ${
+                    (err as Error).message
+                }`
+            )
             setIsConfigValid(false)
         }
     }

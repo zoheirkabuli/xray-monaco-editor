@@ -1,5 +1,6 @@
 import { fetchWithProgress } from '@/shared/utils/fetch-with-progress'
 import { useEffect, useState } from 'react'
+import { consola } from 'consola/browser'
 
 import { LoadingScreen } from '@/shared/ui/loading-screen'
 import { DEFAULT_CONFIG } from '@/shared/constants'
@@ -9,6 +10,7 @@ import { ConfigPageComponent } from '../components/config.page.component'
 export function ConfigPageConnector() {
     const [downloadProgress, setDownloadProgress] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
+    const [version, setVersion] = useState<string>('')
 
     const config = DEFAULT_CONFIG
     useEffect(() => {
@@ -17,7 +19,7 @@ export function ConfigPageConnector() {
                 const go = new window.Go()
                 const wasmInitialized = new Promise<void>((resolve) => {
                     window.onWasmInitialized = () => {
-                        console.info('WASM module initialized')
+                        consola.info('WASM module initialized')
                         resolve()
                     }
                 })
@@ -33,8 +35,13 @@ export function ConfigPageConnector() {
                 } else {
                     throw new Error('XrayParseConfig not initialized')
                 }
+
+                if (typeof window.XrayGetVersion === 'function') {
+                    const xrayVersion = window.XrayGetVersion()
+                    setVersion(xrayVersion)
+                }
             } catch (err: unknown) {
-                console.error('WASM initialization error:', err)
+                consola.error('WASM initialization error:', err)
                 setIsLoading(false)
             }
         }
@@ -49,5 +56,5 @@ export function ConfigPageConnector() {
         return <LoadingScreen text={`WASM module is loading...`} value={downloadProgress} />
     }
 
-    return <ConfigPageComponent config={config} />
+    return <ConfigPageComponent config={config} version={version} />
 }

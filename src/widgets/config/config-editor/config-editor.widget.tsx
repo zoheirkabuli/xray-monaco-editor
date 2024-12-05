@@ -1,7 +1,7 @@
+import { Box, Code, Paper, Title, useMantineColorScheme } from '@mantine/core'
 import { monacoTheme } from '@/shared/lib/monaco-theme'
 import Editor, { Monaco } from '@monaco-editor/react'
 import { useEffect, useRef, useState } from 'react'
-import { Box, Code, Paper } from '@mantine/core'
 
 import { ConfigEditorActionsFeature } from '@features/config/config-editor-actions/ui'
 import { ConfigValidationFeature } from '@features/config/config-validation/ui'
@@ -10,10 +10,11 @@ import { MonacoSetupFeature } from '@features/config/monaco-setup/lib'
 import { Props } from './interfaces'
 
 export function ConfigEditorWidget(props: Props) {
-    const { config } = props
+    const { config, version } = props
     const [result, setResult] = useState('')
     const [isConfigValid, setIsConfigValid] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const { colorScheme } = useMantineColorScheme()
 
     const editorRef = useRef<unknown>(null)
     const monacoRef = useRef<unknown>(null)
@@ -35,14 +36,15 @@ export function ConfigEditorWidget(props: Props) {
                 <Editor
                     beforeMount={handleEditorDidMount}
                     defaultLanguage="json"
-                    height="400px"
+                    height="600px"
                     loading={'Loading editor...'}
                     onChange={() =>
                         ConfigValidationFeature.validate(
                             editorRef,
                             monacoRef,
                             setResult,
-                            setIsConfigValid
+                            setIsConfigValid,
+                            version
                         )
                     }
                     onMount={(editor, monaco) => {
@@ -52,7 +54,8 @@ export function ConfigEditorWidget(props: Props) {
                             editorRef,
                             monacoRef,
                             setResult,
-                            setIsConfigValid
+                            setIsConfigValid,
+                            version
                         )
                     }}
                     options={{
@@ -72,12 +75,12 @@ export function ConfigEditorWidget(props: Props) {
                             indentation: true
                         },
                         insertSpaces: true,
-                        minimap: { enabled: false },
+                        minimap: { enabled: true },
                         quickSuggestions: true,
                         scrollBeyondLastLine: false,
                         tabSize: 2
                     }}
-                    theme={'GithubDark'}
+                    theme={colorScheme === 'dark' ? 'GithubDark' : 'light'}
                     value={JSON.stringify(config, null, 2)}
                 />
             </Paper>
@@ -92,9 +95,14 @@ export function ConfigEditorWidget(props: Props) {
             />
 
             {result && (
-                <Code block p="md">
-                    {result}
-                </Code>
+                <>
+                    <Title mb="xs" order={4}>
+                        Validation result
+                    </Title>
+                    <Code block p="md">
+                        {result}
+                    </Code>
+                </>
             )}
         </Box>
     )

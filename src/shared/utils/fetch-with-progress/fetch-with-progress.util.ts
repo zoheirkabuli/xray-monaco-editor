@@ -1,3 +1,4 @@
+import { consola } from 'consola/browser'
 import axios from 'axios'
 
 export const fetchWithProgress = async (url: string, onProgress?: (progress: number) => void) => {
@@ -16,7 +17,7 @@ export const fetchWithProgress = async (url: string, onProgress?: (progress: num
 
         return response.data
     } catch (error) {
-        console.error('Download failed:', error)
+        consola.error('Download failed:', error)
         throw error
     }
 }

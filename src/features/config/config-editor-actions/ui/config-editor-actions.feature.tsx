@@ -1,6 +1,8 @@
 import { PiCheckSquareOffset } from 'react-icons/pi'
 import { Button, Group } from '@mantine/core'
 
+import { ChangeColorTheme } from '@features/config/change-color-theme/ui/change-color-theme'
+
 import { Props } from './interfaces'
 
 export function ConfigEditorActionsFeature(props: Props) {
@@ -16,14 +18,16 @@ export function ConfigEditorActionsFeature(props: Props) {
     }
 
     return (
-        <Group>
+        <Group gap="xs" justify="space-between" mb="md">
             <Button
-                leftSection={<PiCheckSquareOffset size={16} />}
-                mb="md"
+                leftSection={<PiCheckSquareOffset size={'1.4rem'} />}
                 onClick={formatDocument}
+                size="sm"
+                variant="outline"
             >
                 Format
             </Button>
+            <ChangeColorTheme />
         </Group>
     )
 }
