@@ -11,7 +11,7 @@ export function ChangeColorTheme() {
                 aria-label="Toggle color scheme"
                 onClick={() => toggleColorScheme()}
                 size="lg"
-                variant="subtle"
+                variant="outline"
             >
                 {isDark ? <PiSun size={'1.4rem'} /> : <PiMoon size={'1.4rem'} />}
             </ActionIcon>
