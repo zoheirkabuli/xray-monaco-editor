@@ -26,9 +26,6 @@ var geoipRaw []byte
 var geositeRaw []byte
 
 func main() {
-	// Вызываем тест
-	testRemoveExtDatRules()
-	
 	filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if strings.HasSuffix(path, "geoip.dat") {
 			return io.NopCloser(bytes.NewReader(geoipRaw)), nil
