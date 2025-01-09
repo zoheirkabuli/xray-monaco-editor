@@ -26,6 +26,9 @@ var geoipRaw []byte
 var geositeRaw []byte
 
 func main() {
+	// Вызываем тест
+	testRemoveExtDatRules()
+	
 	filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if strings.HasSuffix(path, "geoip.dat") {
 			return io.NopCloser(bytes.NewReader(geoipRaw)), nil
@@ -168,23 +171,43 @@ EncRJJEl8/Q4jzWq+/JOGQVf6ds=
 func removeExtDatRules(obj interface{}) {
 	switch v := obj.(type) {
 	case map[string]interface{}:
+		fmt.Printf("Processing map with keys: %v\n", getKeys(v))
 		for key, value := range v {
-			if rules, ok := value.([]interface{}); ok {
+			switch val := value.(type) {
+			case []interface{}:
+				fmt.Printf("Processing array in key '%s' with %d elements\n", key, len(val))
 				filteredRules := make([]interface{}, 0)
-				for _, rule := range rules {
-					if ruleStr, ok := rule.(string); ok {
-						if !strings.Contains(ruleStr, "ext:") || !strings.Contains(ruleStr, ".dat") {
-							filteredRules = append(filteredRules, rule)
-						} else {
-							fmt.Printf("Removing rule: %s\n", ruleStr)
+				for _, rule := range val {
+					switch r := rule.(type) {
+					case string:
+						if strings.Contains(r, "ext:") && strings.Contains(r, ".dat") {
+							fmt.Printf("Removing string rule: %s\n", r)
+							continue
 						}
-					} else {
+						filteredRules = append(filteredRules, r)
+					case map[string]interface{}:
+						if domains, ok := r["domain"].([]interface{}); ok {
+							fmt.Printf("Found nested domain rules with %d elements\n", len(domains))
+							filteredDomains := make([]interface{}, 0)
+							for _, domain := range domains {
+								if domainStr, ok := domain.(string); ok {
+									if strings.Contains(domainStr, "ext:") && strings.Contains(domainStr, ".dat") {
+										fmt.Printf("Removing nested rule: %s\n", domainStr)
+										continue
+									}
+									filteredDomains = append(filteredDomains, domain)
+								}
+							}
+							r["domain"] = filteredDomains
+						}
+						filteredRules = append(filteredRules, r)
+					default:
 						filteredRules = append(filteredRules, rule)
 					}
 				}
 				v[key] = filteredRules
-			} else {
-				removeExtDatRules(value)
+			case map[string]interface{}:
+				removeExtDatRules(val)
 			}
 		}
 	case []interface{}:
@@ -192,4 +215,12 @@ func removeExtDatRules(obj interface{}) {
 			removeExtDatRules(item)
 		}
 	}
+}
+
+func getKeys(m map[string]interface{}) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
 }
