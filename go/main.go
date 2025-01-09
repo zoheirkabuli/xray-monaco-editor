@@ -169,12 +169,14 @@ func removeExtDatRules(obj interface{}) {
 	switch v := obj.(type) {
 	case map[string]interface{}:
 		for key, value := range v {
-			if rules, ok := value.([]interface{}); ok && key == "rules" {
+			if rules, ok := value.([]interface{}); ok {
 				filteredRules := make([]interface{}, 0)
 				for _, rule := range rules {
 					if ruleStr, ok := rule.(string); ok {
 						if !strings.Contains(ruleStr, "ext:") || !strings.Contains(ruleStr, ".dat") {
 							filteredRules = append(filteredRules, rule)
+						} else {
+							fmt.Printf("Removing rule: %s\n", ruleStr)
 						}
 					} else {
 						filteredRules = append(filteredRules, rule)
