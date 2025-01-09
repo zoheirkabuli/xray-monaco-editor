@@ -1,3 +1,6 @@
+//go:build js && wasm
+// +build js,wasm
+
 package main
 
 import (
@@ -6,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 	"syscall/js"
 
@@ -26,11 +28,11 @@ var geositeRaw []byte
 func main() {
 	filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if strings.HasSuffix(path, "geoip.dat") {
-			return ioutil.NopCloser(bytes.NewReader(geoipRaw)), nil
+			return io.NopCloser(bytes.NewReader(geoipRaw)), nil
 		}
 
 		if strings.HasSuffix(path, "geosite.dat") {
-			return ioutil.NopCloser(bytes.NewReader(geositeRaw)), nil
+			return io.NopCloser(bytes.NewReader(geositeRaw)), nil
 		}
 
 		return nil, errors.New(path + " cannot be opened in the browser")
@@ -58,6 +60,7 @@ func main() {
 		}
 
 		replaceKeyFileAndCertificateFile(configObj)
+		removeExtDatRules(configObj)
 
 		modifiedConfigBytes, err := json.Marshal(configObj)
 		if err != nil {
@@ -158,6 +161,33 @@ EncRJJEl8/Q4jzWq+/JOGQVf6ds=
 	case []interface{}:
 		for _, item := range v {
 			replaceKeyFileAndCertificateFile(item)
+		}
+	}
+}
+
+func removeExtDatRules(obj interface{}) {
+	switch v := obj.(type) {
+	case map[string]interface{}:
+		for key, value := range v {
+			if rules, ok := value.([]interface{}); ok && key == "rules" {
+				filteredRules := make([]interface{}, 0)
+				for _, rule := range rules {
+					if ruleStr, ok := rule.(string); ok {
+						if !strings.Contains(ruleStr, "ext:") || !strings.Contains(ruleStr, ".dat") {
+							filteredRules = append(filteredRules, rule)
+						}
+					} else {
+						filteredRules = append(filteredRules, rule)
+					}
+				}
+				v[key] = filteredRules
+			} else {
+				removeExtDatRules(value)
+			}
+		}
+	case []interface{}:
+		for _, item := range v {
+			removeExtDatRules(item)
 		}
 	}
 }
