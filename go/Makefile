@@ -28,7 +28,9 @@ assets/geosite.dat:
 	cd assets && wget https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat -O geosite.dat
 
 wasm_exec.js:
-	cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" .
+	mkdir -p .wasm
+	curl -o .wasm/wasm_exec.js https://raw.githubusercontent.com/golang/go/refs/heads/master/lib/wasm/wasm_exec.js
+	cp .wasm/wasm_exec.js .
 
 main.wasm: assets/geoip.dat assets/geosite.dat assets/xray-patched main.go go.mod xray-wasm.patch
 	GOARCH=wasm GOOS=js go build -o main.wasm main.go
@@ -37,5 +39,9 @@ assets/Xray-docs-next-main:
 	mkdir -p assets
 	cd assets && curl -fL https://github.com/XTLS/Xray-docs-next/archive/refs/heads/main.tar.gz | tar xvzf -
 
-xray.schema.json: scrape-docs.py assets/Xray-docs-next-main
-	grep -r '' assets/Xray-docs-next-main/docs/en/config/ | cut -d: -f2- | python3 scrape-docs.py > xray.schema.json
+xray.schema.json:
+	grep -r '' assets/Xray-docs-next-main/docs/ru/config/ \
+		| cut -d: -f2- \
+		| PYTHONUNBUFFERED=1 \
+		python3 scrape-docs.py "Основные модули конфигурации" \
+		> xray.schema.json

@@ -29,8 +29,32 @@ KNOWN_BAD_RESOLVES = (
     "xhttpSettings",
     "PingConfigObject",
     "XHTTP: Beyond REALITY",
+    "CostObject",
+    "SockoptObject",
 )
 USED_OBJECTS = set()
+
+
+def clean_prefix(line: str) -> bool:
+    """
+    Checks that the line:
+      - starts with '>'
+      - if a '`' appears **before** the first ':', there are only spaces between '>' and that '`';
+      - otherwise returns True.
+    """
+    if not line.startswith(">"):
+        return False
+
+    body = line[1:]
+    idx_tick = body.find("`")
+    idx_colon = body.find(":")
+    if idx_colon == -1:
+        idx_colon = body.find("：")
+
+    if 0 <= idx_tick < idx_colon:
+        return all(ch == " " for ch in body[:idx_tick])
+
+    return True
 
 
 def parse(stdin: Iterator[str]) -> Iterator[JsonschemaType]:
@@ -59,9 +83,16 @@ def parse(stdin: Iterator[str]) -> Iterator[JsonschemaType]:
                 "description": "",
                 "raw_properties": [],
             }
-        elif line.startswith("> ") and ":" in line and current_obj:
-            name, ty = line[2:].split(":", 1)
+        elif line.startswith("> ") and (":" in line or "：" in line) and current_obj:
+            if ":" in line:
+                name, ty = line[2:].split(":", 1)
+            else:
+                name, ty = line[2:].split("：", 1)
+
             if name == "Tony":
+                continue
+
+            if not clean_prefix(line):
                 continue
 
             name = name.strip(" `")
@@ -86,6 +117,7 @@ def parse_type(input: str) -> dict:
     input = (
         input.replace('<Badge text="WIP" type="warning"/>', "")
         .replace('<Badge text="BETA" type="warning"/>', "")
+        .replace("<br>", "")
         .strip()
     )
 
@@ -134,16 +166,26 @@ def parse_type(input: str) -> dict:
     if input.startswith("a list of"):
         return {}
 
-    if input == "string array":
+    if input == "string array" or input == "array":
         return {"type": "array", "items": {"type": "string"}}
 
     if input.startswith("string, any of"):
         return {"type": "string"}
 
+    # Вот тут я не уверен
+    if input == "object":
+        return {}
+
+    if input == "float number":
+        return {"type": "number"}
+
     raise Exception(input)
 
 
 def main():
+    # root definition
+    root_definition = sys.argv[1]
+
     definitions = {}
     for definition in parse(sys.stdin):
         key = definition["title"]
@@ -159,13 +201,19 @@ def main():
     for name in USED_OBJECTS:
         assert name in definitions, f"Cannot resolve {name}, add to KNOWN_BAD_RESOLVES?"
 
+    #     schema = {
+    #         "$schema": "http://json-schema.org/draft-07/schema#",
+    #         "$ref": "#/definitions/Основные модули конфигурации",
+    #         "definitions": definitions
+    #     }
+
     schema = {
         "$schema": "http://json-schema.org/draft-07/schema#",
-        "$ref": "#/definitions/Basic Configuration Modules",
+        "$ref": f"#/definitions/{root_definition}",
         "definitions": definitions,
     }
 
-    print(json.dumps(schema, indent=2))
+    print(json.dumps(schema, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
