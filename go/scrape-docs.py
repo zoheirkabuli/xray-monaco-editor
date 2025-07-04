@@ -31,7 +31,6 @@ KNOWN_BAD_RESOLVES = (
     "XHTTP: Beyond REALITY",
     "CostObject",
     "SockoptObject",
-    "LogObject",
 )
 USED_OBJECTS = set()
 
