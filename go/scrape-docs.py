@@ -179,9 +179,6 @@ def parse_type(input: str) -> dict:
     if input == "float number":
         return {"type": "number"}
 
-    if input == "{}":
-        return {"type": "object"}
-
     raise Exception(input)
 
 

@@ -1,13 +1,12 @@
-build: main.wasm wasm_exec.js xray.schema.json xray.schema.en.json
+build: main.wasm wasm_exec.js xray.schema.json
 	mkdir -p ../public
-	mv main.wasm wasm_exec.js xray.schema.json xray.schema.en.json ../public/
+	mv main.wasm wasm_exec.js xray.schema.json ../public/
 .PHONY: build
 
 dev-lite:
 	wget -nc https://mmmray.github.io/xray-online/main.wasm
 	wget -nc https://mmmray.github.io/xray-online/wasm_exec.js
 	wget -nc https://mmmray.github.io/xray-online/xray.schema.json
-	wget -nc https://mmmray.github.io/xray-online/xray.schema.en.json 2>/dev/null || true
 .PHONY: build-lite
 
 assets/xray-patched: xray-version.txt
@@ -46,10 +45,3 @@ xray.schema.json: assets/Xray-docs-next-main
 		| PYTHONUNBUFFERED=1 \
 		python3 scrape-docs.py "Основные модули конфигурации" \
 		> xray.schema.json
-
-xray.schema.en.json: assets/Xray-docs-next-main
-	grep -r '' assets/Xray-docs-next-main/docs/en/config/ \
-		| cut -d: -f2- \
-		| PYTHONUNBUFFERED=1 \
-		python3 scrape-docs.py "Basic Configuration Modules" \
-		> xray.schema.en.json
